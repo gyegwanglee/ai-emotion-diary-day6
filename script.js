@@ -14,6 +14,9 @@ window.addEventListener('DOMContentLoaded', () => {
     if (savedResponse) {
         aiResponse.innerHTML = savedResponse;
     }
+    
+    // 일기 히스토리 불러오기
+    loadHistory();
 });
 
 // Web Speech API의 SpeechRecognition 객체 가져오기 (크로스 브라우징 지원)
@@ -105,6 +108,9 @@ analyzeBtn.addEventListener('click', async () => {
             // 로컬 스토리지에 결과 저장
             localStorage.setItem('diaryText', text);
             localStorage.setItem('aiResponseHTML', formattedResponse);
+            
+            // 새 일기를 저장했으므로 히스토리를 다시 불러옵니다
+            loadHistory();
         } else {
             aiResponse.textContent = '에러: ' + (data.error || '알 수 없는 에러가 발생했습니다.');
         }
@@ -118,3 +124,39 @@ analyzeBtn.addEventListener('click', async () => {
     }
 });
 
+// 일기 히스토리 불러오기 함수
+async function loadHistory() {
+    const historyContainer = document.getElementById('history-container');
+    const historySection = document.getElementById('history-section');
+    if (!historyContainer) return;
+
+    try {
+        const response = await fetch('/api/history');
+        const data = await response.json();
+
+        if (response.ok) {
+            if (data.length === 0) {
+                historyContainer.innerHTML = '<p style="color: #888; text-align: center; padding: 20px;">아직 저장된 일기가 없습니다. 첫 일기를 작성해보세요!</p>';
+            } else {
+                historyContainer.innerHTML = data.map(item => {
+                    const dateStr = item.timestamp 
+                        ? new Date(item.timestamp).toLocaleString('ko-KR') 
+                        : '시간 정보 없음';
+                    
+                    return `
+                        <div class="history-card">
+                            <div class="history-date">🕒 ${dateStr}</div>
+                            <div class="history-original">" ${item.originalText} "</div>
+                            <div class="history-ai">${item.aiResponse.replace(/\n/g, '<br>')}</div>
+                        </div>
+                    `;
+                }).join('');
+            }
+        } else {
+            historyContainer.innerHTML = '<p style="color: red; text-align: center;">히스토리를 불러오는데 실패했습니다.</p>';
+        }
+    } catch (error) {
+        console.error('히스토리 로딩 에러:', error);
+        historyContainer.innerHTML = '<p style="color: red; text-align: center;">서버와 통신할 수 없어 히스토리를 불러올 수 없습니다.</p>';
+    }
+}
