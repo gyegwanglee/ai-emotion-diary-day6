@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI 감정일기</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <div class="container">
+        <h1>오늘의 하루는 어땠나요?</h1>
+        <textarea id="textInput" placeholder="여기에 텍스트가 입력됩니다..."></textarea>
+
+        <div class="button-group">
+            <button id="voiceBtn">음성으로 입력하기</button>
+            <button id="analyzeBtn" class="primary-btn">분석 요청하기</button>
+        </div>
+
+        <div id="aiResponse" class="ai-box">
+            여기에 AI의 답변이 표시됩니다.
+        </div>
+    </div>
+    <script src="script.js"></script>
+</body>
+
+</html>
+node server.js
