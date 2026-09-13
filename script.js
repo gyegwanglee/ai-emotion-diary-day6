@@ -33,6 +33,14 @@ document.addEventListener('DOMContentLoaded', () => {
     const textInput = document.getElementById('textInput');
     const aiResponse = document.getElementById('aiResponse');
 
+    // 실시간 채팅 요소 참조
+    const chatMessages = document.getElementById('chatMessages');
+    const chatForm = document.getElementById('chatForm');
+    const chatInput = document.getElementById('chatInput');
+
+    let activeUser = null;
+    let chatChannel = null;
+
     // 메시지 표시 헬퍼
     function showMessage(text, isError = true) {
         if (!authMessage) return;
@@ -48,6 +56,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // UI 전환 헬퍼 (로그인 상태 vs 비로그인 상태)
     function updateAuthUI(user) {
+        activeUser = user;
         if (user) {
             console.log('[Auth] 로그인 상태:', user.email);
             if (authSection) authSection.style.display = 'none';
@@ -60,12 +69,20 @@ document.addEventListener('DOMContentLoaded', () => {
             if (savedText && textInput) textInput.value = savedText;
             if (savedResponse && aiResponse) aiResponse.innerHTML = savedResponse;
 
-            // 히스토리 불러오기
+            // 히스토리 및 실시간 채팅 초기화
             loadHistory();
+            initRealtimeChat(user);
         } else {
             console.log('[Auth] 비로그인 상태');
             if (authSection) authSection.style.display = 'flex';
             if (mainAppSection) mainAppSection.style.display = 'none';
+            
+            // 채널 구독 해제
+            const sb = getSupabase();
+            if (sb && chatChannel) {
+                sb.removeChannel(chatChannel);
+                chatChannel = null;
+            }
         }
     }
 
@@ -80,14 +97,13 @@ document.addEventListener('DOMContentLoaded', () => {
             updateAuthUI(null);
         });
 
-        // 세션 변화 수신기 (로그인, 로그아웃, 회원가입 등)
+        // 세션 변화 수신기
         client.auth.onAuthStateChange((event, session) => {
             console.log('[Auth] 상태 변경 이벤트:', event);
             updateAuthUI(session?.user || null);
         });
     } else {
         console.warn("[Auth] Supabase SDK 로드 대기 중...");
-        // 0.5초 후 재시도
         setTimeout(() => {
             const retryClient = getSupabase();
             if (retryClient) {
@@ -227,7 +243,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 googleLoginBtn.disabled = true;
                 googleLoginBtn.style.opacity = '0.7';
 
-                const { data, error } = await sb.auth.signInWithOAuth({
+                const { error } = await sb.auth.signInWithOAuth({
                     provider: 'google',
                     options: {
                         redirectTo: window.location.origin
@@ -259,7 +275,149 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // --- 6. 음성 인식 처리 ---
+    // --- 6. 실시간 채팅(Realtime Chat) 로직 ---
+
+    function appendChatMessage(data) {
+        if (!chatMessages) return;
+
+        // 안내 문구 제거
+        const placeholder = chatMessages.querySelector('.chat-placeholder');
+        if (placeholder) placeholder.remove();
+
+        const isMine = activeUser && (data.senderId === activeUser.id || data.senderEmail === activeUser.email);
+        const timeStr = data.timestamp ? new Date(data.timestamp).toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' }) : '';
+
+        const msgItem = document.createElement('div');
+        msgItem.className = `chat-item ${isMine ? 'mine' : 'others'}`;
+
+        if (!isMine) {
+            const senderTag = document.createElement('div');
+            senderTag.className = 'chat-sender-tag';
+            senderTag.textContent = data.senderEmail || '익명';
+            msgItem.appendChild(senderTag);
+        }
+
+        const bubble = document.createElement('div');
+        bubble.className = 'chat-bubble';
+        bubble.textContent = data.message;
+        msgItem.appendChild(bubble);
+
+        const timeTag = document.createElement('div');
+        timeTag.className = 'chat-timestamp';
+        timeTag.textContent = timeStr;
+        msgItem.appendChild(timeTag);
+
+        chatMessages.appendChild(msgItem);
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+    }
+
+    function initRealtimeChat(user) {
+        const sb = getSupabase();
+        if (!sb || !user) return;
+
+        // 기존 채널 정리
+        if (chatChannel) {
+            sb.removeChannel(chatChannel);
+        }
+
+        // Supabase Realtime 방송 채널 구독
+        chatChannel = sb.channel('public-chat');
+
+        chatChannel
+            .on('broadcast', { event: 'message' }, ({ payload }) => {
+                console.log('[Realtime Chat] 새 메시지 수신:', payload);
+                appendChatMessage(payload);
+            })
+            .subscribe((status) => {
+                if (status === 'SUBSCRIBED') {
+                    console.log('[Realtime Chat] 채널 구독 완료');
+                }
+            });
+
+        // DB에 저장된 최근 대화 기록 불러오기
+        loadChatHistory(sb);
+    }
+
+    async function loadChatHistory(sb) {
+        try {
+            const { data, error } = await sb
+                .from('chat_messages')
+                .select('*')
+                .order('created_at', { ascending: true })
+                .limit(50);
+
+            if (!error && data && data.length > 0) {
+                // 초기화 후 렌더링
+                if (chatMessages) {
+                    chatMessages.innerHTML = '';
+                }
+                data.forEach(item => {
+                    appendChatMessage({
+                        senderId: item.user_id,
+                        senderEmail: item.user_email,
+                        message: item.message,
+                        timestamp: item.created_at
+                    });
+                });
+            }
+        } catch (err) {
+            // chat_messages 테이블 미생성 시 실시간 Broadcast 기능으로 작동
+        }
+    }
+
+    async function sendChatMessage() {
+        if (!chatInput) return;
+        const text = chatInput.value.trim();
+        if (!text) return;
+
+        const sb = getSupabase();
+        if (!sb || !activeUser) return;
+
+        const payload = {
+            senderId: activeUser.id,
+            senderEmail: activeUser.email || '익명',
+            message: text,
+            timestamp: new Date().toISOString()
+        };
+
+        // 1) Broadcast 메시지 송신 (다른 연결자에게 즉시 전달)
+        if (chatChannel) {
+            await chatChannel.send({
+                type: 'broadcast',
+                event: 'message',
+                payload: payload
+            });
+        }
+
+        // 2) 내 화면에 즉시 렌더링
+        appendChatMessage(payload);
+
+        // 3) 입력창 초기화
+        chatInput.value = '';
+
+        // 4) Supabase DB 저장 (테이블이 있는 경우 영구 보존)
+        try {
+            await sb.from('chat_messages').insert([
+                {
+                    user_id: activeUser.id,
+                    user_email: activeUser.email || '익명',
+                    message: text,
+                    created_at: payload.timestamp
+                }
+            ]);
+        } catch (err) {
+            // DB 미생성 시 무시 (Broadcast로 실시간 작동)
+        }
+    }
+
+    if (chatForm) {
+        chatForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            sendChatMessage();
+        });
+    }
+
+    // --- 7. 음성 인식 처리 ---
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
     if (voiceBtn) {
         if (!SpeechRecognition) {
@@ -304,7 +462,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // 인증 헤더 생성 헬퍼 (Authorization: Bearer <access_token>)
+    // 인증 헤더 생성 헬퍼
     async function getAuthHeaders() {
         const sb = getSupabase();
         if (!sb) return {};
@@ -319,7 +477,7 @@ document.addEventListener('DOMContentLoaded', () => {
         return {};
     }
 
-    // --- 7. 감정 분석 요청 API 처리 ---
+    // --- 8. 감정 분석 요청 API 처리 ---
     if (analyzeBtn) {
         analyzeBtn.addEventListener('click', async () => {
             const text = textInput ? textInput.value.trim() : '';
@@ -352,7 +510,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     localStorage.setItem('diaryText', text);
                     localStorage.setItem('aiResponseHTML', formattedResponse);
                     
-                    loadHistory();
+                    await loadHistory();
                 } else {
                     if (aiResponse) aiResponse.textContent = '에러: ' + (data.error || '알 수 없는 에러가 발생했습니다.');
                 }
@@ -366,7 +524,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // --- 8. 히스토리 불러오기 ---
+    // --- 9. 히스토리 불러오기 ---
     async function loadHistory() {
         const historyContainer = document.getElementById('history-container');
         if (!historyContainer) return;

@@ -78,6 +78,22 @@
                 <!-- 히스토리 카드들이 여기에 동적으로 추가됩니다 -->
             </div>
         </div>
+
+        <!-- 실시간 채팅 섹션 -->
+        <div class="container" id="chat-section" style="margin-top: 30px;">
+            <h2>실시간 채팅</h2>
+            
+            <!-- 메시지 스크롤 영역 -->
+            <div id="chatMessages" class="chat-messages-container">
+                <p class="chat-placeholder">대화에 참여하여 메시지를 나눠보세요!</p>
+            </div>
+
+            <!-- 하단 메시지 입력 폼 -->
+            <form id="chatForm" class="chat-input-form" onsubmit="return false;">
+                <input type="text" id="chatInput" placeholder="메시지를 입력하세요..." autocomplete="off">
+                <button type="submit" id="sendChatBtn" class="primary-btn">전송</button>
+            </form>
+        </div>
     </div>
 
     <script src="script.js"></script>

@@ -341,3 +341,128 @@ button.recording:hover {
     line-height: 1.5;
     font-size: 0.95em;
 }
+
+/* 실시간 채팅 섹션 스타일 */
+#chat-section {
+    border-top: 1px solid #eee;
+    padding-top: 20px;
+}
+
+#chat-section h2 {
+    font-size: 1.2rem;
+    color: #6d28d9;
+    margin-bottom: 15px;
+    text-align: left;
+}
+
+.chat-messages-container {
+    height: 280px;
+    overflow-y: auto;
+    background-color: #fcfaff;
+    border: 1px solid #ede9fe;
+    border-radius: 12px;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    scroll-behavior: smooth;
+}
+
+.chat-messages-container::-webkit-scrollbar {
+    width: 6px;
+}
+
+.chat-messages-container::-webkit-scrollbar-thumb {
+    background-color: #c4b5fd;
+    border-radius: 10px;
+}
+
+.chat-placeholder {
+    color: #94a3b8;
+    text-align: center;
+    margin: auto 0;
+    font-size: 0.9rem;
+}
+
+.chat-item {
+    display: flex;
+    flex-direction: column;
+    max-width: 80%;
+    word-break: break-word;
+}
+
+.chat-item.mine {
+    align-self: flex-end;
+    align-items: flex-end;
+}
+
+.chat-item.others {
+    align-self: flex-start;
+    align-items: flex-start;
+}
+
+.chat-sender-tag {
+    font-size: 0.76rem;
+    color: #7c3aed;
+    font-weight: 600;
+    margin-bottom: 3px;
+    padding-left: 2px;
+}
+
+.chat-bubble {
+    padding: 10px 14px;
+    font-size: 0.94rem;
+    line-height: 1.45;
+}
+
+.chat-item.mine .chat-bubble {
+    background: linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%);
+    color: #ffffff;
+    border-radius: 16px 16px 2px 16px;
+    box-shadow: 0 2px 8px rgba(124, 58, 237, 0.2);
+}
+
+.chat-item.others .chat-bubble {
+    background: #ffffff;
+    color: #1e293b;
+    border: 1px solid #e2e8f0;
+    border-radius: 16px 16px 16px 2px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+}
+
+.chat-timestamp {
+    font-size: 0.68rem;
+    color: #a1a1aa;
+    margin-top: 3px;
+    padding: 0 2px;
+}
+
+.chat-input-form {
+    display: flex;
+    gap: 10px;
+    width: 100%;
+    margin-top: 10px;
+}
+
+.chat-input-form input {
+    flex: 1;
+    padding: 12px 14px;
+    border: 1px solid #cbd5e1;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    outline: none;
+    transition: all 0.2s ease;
+}
+
+.chat-input-form input:focus {
+    border-color: #8b5cf6;
+    box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.2);
+}
+
+.chat-input-form button {
+    flex: none;
+    width: 90px;
+    padding: 12px;
+    font-size: 0.95rem;
+}
+
