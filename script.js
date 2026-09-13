@@ -277,8 +277,21 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- 6. 실시간 채팅(Realtime Chat) 로직 ---
 
+    const renderedMsgKeys = new Set();
+
     function appendChatMessage(data) {
         if (!chatMessages) return;
+
+        // 중복 렌더링 방지 고유 키 생성
+        const timeKeyStr = data.timestamp ? new Date(data.timestamp).toISOString() : '';
+        const key = data.msgId 
+            ? `id-${data.msgId}` 
+            : `${data.senderEmail}-${data.message}-${timeKeyStr.substring(0, 16)}`;
+
+        if (renderedMsgKeys.has(key)) {
+            return; // 이미 표시된 메시지면 통과
+        }
+        renderedMsgKeys.add(key);
 
         // 안내 문구 제거
         const placeholder = chatMessages.querySelector('.chat-placeholder');
@@ -290,12 +303,11 @@ document.addEventListener('DOMContentLoaded', () => {
         const msgItem = document.createElement('div');
         msgItem.className = `chat-item ${isMine ? 'mine' : 'others'}`;
 
-        if (!isMine) {
-            const senderTag = document.createElement('div');
-            senderTag.className = 'chat-sender-tag';
-            senderTag.textContent = data.senderEmail || '익명';
-            msgItem.appendChild(senderTag);
-        }
+        // 각 메시지 옆/상단에 보낸 사람의 이메일(user_email) 표시
+        const senderTag = document.createElement('div');
+        senderTag.className = 'chat-sender-tag';
+        senderTag.textContent = data.senderEmail || '익명';
+        msgItem.appendChild(senderTag);
 
         const bubble = document.createElement('div');
         bubble.className = 'chat-bubble';
@@ -320,42 +332,90 @@ document.addEventListener('DOMContentLoaded', () => {
             sb.removeChannel(chatChannel);
         }
 
-        // Supabase Realtime 방송 채널 구독
-        chatChannel = sb.channel('public-chat');
+        // Supabase Realtime 채널 생성
+        chatChannel = sb.channel('messages-realtime-channel');
 
-        chatChannel
-            .on('broadcast', { event: 'message' }, ({ payload }) => {
-                console.log('[Realtime Chat] 새 메시지 수신:', payload);
-                appendChatMessage(payload);
-            })
-            .subscribe((status) => {
-                if (status === 'SUBSCRIBED') {
-                    console.log('[Realtime Chat] 채널 구독 완료');
+        // 1) Broadcast 메시지 감지
+        chatChannel.on('broadcast', { event: 'message' }, ({ payload }) => {
+            console.log('[Realtime Broadcast] 메시지 수신:', payload);
+            appendChatMessage(payload);
+        });
+
+        // 2) 'messages' 테이블의 INSERT 이벤트 실시간 구독 (postgres_changes)
+        chatChannel.on(
+            'postgres_changes',
+            { event: 'INSERT', schema: 'public', table: 'messages' },
+            (payload) => {
+                console.log('[Realtime postgres_changes] messages INSERT:', payload.new);
+                if (payload.new) {
+                    appendChatMessage({
+                        msgId: payload.new.id,
+                        senderId: payload.new.user_id,
+                        senderEmail: payload.new.user_email || payload.new.email,
+                        message: payload.new.content || payload.new.message,
+                        timestamp: payload.new.created_at || payload.new.timestamp
+                    });
                 }
-            });
+            }
+        );
 
-        // DB에 저장된 최근 대화 기록 불러오기
+        // 3) 'message' 테이블의 INSERT 이벤트 실시간 구독 (단수형 호환)
+        chatChannel.on(
+            'postgres_changes',
+            { event: 'INSERT', schema: 'public', table: 'message' },
+            (payload) => {
+                console.log('[Realtime postgres_changes] message INSERT:', payload.new);
+                if (payload.new) {
+                    appendChatMessage({
+                        msgId: payload.new.id,
+                        senderId: payload.new.user_id,
+                        senderEmail: payload.new.user_email || payload.new.email,
+                        message: payload.new.content || payload.new.message,
+                        timestamp: payload.new.created_at || payload.new.timestamp
+                    });
+                }
+            }
+        );
+
+        chatChannel.subscribe((status) => {
+            if (status === 'SUBSCRIBED') {
+                console.log('[Realtime Chat] 메시지 테이블 실시간 구독 활성화 완료');
+            }
+        });
+
+        // 4) 페이지가 처음 열릴 때 기존 메시지들을 가져와 화면에 표시
         loadChatHistory(sb);
     }
 
     async function loadChatHistory(sb) {
         try {
-            // 1) 'message' 테이블 우선 조회
+            // 'messages' 테이블 우선 조회
             let { data, error } = await sb
-                .from('message')
+                .from('messages')
                 .select('*')
                 .order('created_at', { ascending: true })
-                .limit(50);
+                .limit(100);
 
-            // 'message' 테이블 미존재 시 'chat_messages' 폴백
+            // 'messages' 없을 경우 'message' 테이블 조회 시도
             if (error) {
-                const fallback = await sb
+                const retryMsg = await sb
+                    .from('message')
+                    .select('*')
+                    .order('created_at', { ascending: true })
+                    .limit(100);
+                data = retryMsg.data;
+                error = retryMsg.error;
+            }
+
+            // 'message'도 없을 경우 'chat_messages' 테이블 폴백
+            if (error) {
+                const retryChatMessages = await sb
                     .from('chat_messages')
                     .select('*')
                     .order('created_at', { ascending: true })
-                    .limit(50);
-                data = fallback.data;
-                error = fallback.error;
+                    .limit(100);
+                data = retryChatMessages.data;
+                error = retryChatMessages.error;
             }
 
             if (!error && data && data.length > 0) {
@@ -364,6 +424,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
                 data.forEach(item => {
                     appendChatMessage({
+                        msgId: item.id,
                         senderId: item.user_id,
                         senderEmail: item.user_email || item.email,
                         message: item.content || item.message,
@@ -372,7 +433,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 });
             }
         } catch (err) {
-            console.warn('[Chat History Load Warning]:', err.message);
+            console.warn('[Chat History Load Error]:', err.message);
         }
     }
 
@@ -391,7 +452,7 @@ document.addEventListener('DOMContentLoaded', () => {
             timestamp: new Date().toISOString()
         };
 
-        // 1) Broadcast 메시지 송신 (다른 접속자에게 실시간 즉시 전달)
+        // 1) Broadcast 메시지 전송
         if (chatChannel) {
             await chatChannel.send({
                 type: 'broadcast',
@@ -400,13 +461,13 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         }
 
-        // 2) 내 화면에 즉시 렌더링
+        // 2) 내 화면 즉시 표시
         appendChatMessage(payload);
 
-        // 3) 전송 성공 시 입력창 깨끗하게 비우기
+        // 3) 입력창 초기화
         chatInput.value = '';
 
-        // 4) Supabase 'message' 테이블에 저장 (content, user_email)
+        // 4) Supabase DB 저장 ('messages' / 'message' 테이블)
         try {
             const insertObj = {
                 content: text,
@@ -417,12 +478,17 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             let { error } = await sb
-                .from('message')
+                .from('messages')
                 .insert([insertObj]);
 
-            // 'message' 테이블에 문제가 있는 경우 'chat_messages' 폴백
             if (error) {
-                console.warn('[message 테이블 저장 실패, chat_messages 폴백]:', error.message);
+                const retry = await sb
+                    .from('message')
+                    .insert([insertObj]);
+                error = retry.error;
+            }
+
+            if (error) {
                 await sb.from('chat_messages').insert([
                     {
                         user_id: activeUser.id,
@@ -432,10 +498,10 @@ document.addEventListener('DOMContentLoaded', () => {
                     }
                 ]);
             } else {
-                console.log('[Supabase message 테이블 저장 완료]');
+                console.log('[Supabase DB 메시지 저장 완료]');
             }
         } catch (err) {
-            console.error('[Message 저장 예외]:', err.message);
+            console.error('[Message DB 저장 예외]:', err.message);
         }
     }
 
