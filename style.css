@@ -6,14 +6,15 @@
 
 body {
     font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, Roboto, 'Helvetica Neue', 'Segoe UI', 'Apple SD Gothic Neo', 'Noto Sans KR', 'Malgun Gothic', sans-serif;
-    /* 바탕화면: 짙은 보라색 그라데이션 */
-    background: linear-gradient(135deg, #180928 0%, #290f45 50%, #130522 100%);
+    /* 바탕화면: 깔끔하고 밝은 흰색/연한 그레이 배경 */
+    background: #f8fafc;
     background-attachment: fixed;
     display: flex;
     justify-content: center;
     align-items: center;
     min-height: 100vh;
     padding: 40px 20px;
+    color: #ffffff;
 }
 
 .app-wrapper {
@@ -24,16 +25,19 @@ body {
     width: 100%;
 }
 
+/* 내부 사각형 영역: 보라색 테마 적용 */
 .container {
-    background-color: #ffffff;
+    background: linear-gradient(145deg, #1e0a38 0%, #2e1065 50%, #1e0a38 100%);
     padding: 30px;
     border-radius: 18px;
-    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.25);
+    box-shadow: 0 15px 35px rgba(46, 16, 101, 0.25);
+    border: 1px solid rgba(139, 92, 246, 0.2);
     width: 90%;
     max-width: 600px;
     display: flex;
     flex-direction: column;
     gap: 20px;
+    color: #ffffff;
 }
 
 /* 로그인 화면 전용 스타일 */
@@ -48,17 +52,17 @@ body {
     to { opacity: 1; transform: translateY(0); }
 }
 
-/* 타이틀: 선명하고 우아한 보라색 */
+/* 타이틀: 선명한 밝은 라벤더 보라색 */
 .auth-title {
     text-align: center;
-    color: #7c3aed;
+    color: #ffffff;
     font-size: 1.9rem;
     font-weight: 800;
 }
 
 .auth-subtitle {
     text-align: center;
-    color: #64748b;
+    color: #cbd5e1;
     font-size: 0.95rem;
     margin-top: -10px;
     margin-bottom: 10px;
@@ -74,22 +78,24 @@ body {
 .input-field-group label {
     font-size: 0.88rem;
     font-weight: 600;
-    color: #475569;
+    color: #e2e8f0;
 }
 
 .input-field-group input {
     width: 100%;
     padding: 12px 14px;
-    border: 1px solid #cbd5e1;
+    border: 1px solid #c4b5fd;
     border-radius: 8px;
     font-size: 0.98rem;
     outline: none;
+    background-color: #ffffff;
+    color: #1e1b4b;
     transition: all 0.2s ease;
 }
 
 .input-field-group input:focus {
-    border-color: #8b5cf6;
-    box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.2);
+    border-color: #a78bfa;
+    box-shadow: 0 0 0 3px rgba(167, 139, 250, 0.4);
 }
 
 .auth-buttons {
@@ -106,22 +112,22 @@ body {
 }
 
 .auth-message.error {
-    color: #ef4444;
+    color: #fca5a5;
 }
 
 .auth-message.success {
-    color: #10b981;
+    color: #6ee7b7;
 }
 
 /* 버튼 공통 & 2차 버튼 */
 button.secondary-btn {
-    background-color: #f1f5f9;
-    color: #334155;
-    border: 1px solid #cbd5e1;
+    background-color: rgba(255, 255, 255, 0.15);
+    color: #ffffff;
+    border: 1px solid rgba(255, 255, 255, 0.3);
 }
 
 button.secondary-btn:hover {
-    background-color: #e2e8f0;
+    background-color: rgba(255, 255, 255, 0.25);
 }
 
 /* 또는 구분선 */
@@ -130,14 +136,14 @@ button.secondary-btn:hover {
     align-items: center;
     text-align: center;
     margin: 5px 0;
-    color: #94a3b8;
+    color: #cbd5e1;
     font-size: 0.85rem;
 }
 
 .divider::before, .divider::after {
     content: '';
     flex: 1;
-    border-bottom: 1px solid #e2e8f0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
 }
 
 .divider span {
@@ -153,7 +159,7 @@ button.secondary-btn:hover {
     background-color: #ffffff;
     color: #1e293b;
     border: 1px solid #e2e8f0;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
 .google-btn:hover {
@@ -166,42 +172,47 @@ button.secondary-btn:hover {
     height: 20px;
 }
 
-/* 로그인 사용자 헤더 */
+/* 로그인 사용자 헤더 (보라색 사각형 상자) */
 .user-header {
     width: 90%;
     max-width: 600px;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    background-color: white;
+    background: linear-gradient(145deg, #1e0a38 0%, #2e1065 100%);
+    border: 1px solid rgba(139, 92, 246, 0.2);
     padding: 12px 20px;
     border-radius: 12px;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+    box-shadow: 0 4px 15px rgba(46, 16, 101, 0.2);
 }
 
 #userEmailInfo {
     font-size: 0.92rem;
-    color: #334155;
+    color: #e2e8f0;
+}
+
+#userEmailInfo strong {
+    color: #ffffff;
 }
 
 .logout-btn {
     flex: none;
     padding: 8px 16px;
     font-size: 0.85rem;
-    background-color: #fff1f2;
-    color: #e11d48;
-    border: 1px solid #fecdd3;
+    background-color: rgba(239, 68, 68, 0.2);
+    color: #fca5a5;
+    border: 1px solid rgba(239, 68, 68, 0.4);
     border-radius: 6px;
 }
 
 .logout-btn:hover {
-    background-color: #ffe4e6;
+    background-color: rgba(239, 68, 68, 0.3);
 }
 
-/* 메인 타이틀: 보라색 지정 */
+/* 메인 타이틀: 흰색/밝은 라벤더 */
 h1 {
     text-align: center;
-    color: #7c3aed;
+    color: #ffffff;
     font-size: 1.6rem;
     font-weight: 700;
 }
@@ -210,17 +221,19 @@ textarea {
     width: 100%;
     height: 180px;
     padding: 15px;
-    border: 1px solid #ddd;
+    border: 1px solid #c4b5fd;
     border-radius: 8px;
     font-size: 1rem;
     resize: none;
     outline: none;
+    background-color: #ffffff;
+    color: #1e1b4b;
     transition: border-color 0.3s;
 }
 
 textarea:focus {
-    border-color: #8b5cf6;
-    box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.2);
+    border-color: #a78bfa;
+    box-shadow: 0 0 0 3px rgba(167, 139, 250, 0.4);
 }
 
 .button-group {
@@ -231,9 +244,9 @@ textarea:focus {
 
 button {
     flex: 1;
-    background-color: #f0f0f0;
-    color: #333;
-    border: 1px solid #ddd;
+    background-color: rgba(255, 255, 255, 0.15);
+    color: #ffffff;
+    border: 1px solid rgba(255, 255, 255, 0.3);
     border-radius: 8px;
     padding: 14px;
     font-size: 1rem;
@@ -243,10 +256,10 @@ button {
 }
 
 button:hover {
-    background-color: #e4e4e4;
+    background-color: rgba(255, 255, 255, 0.25);
 }
 
-/* 주요 버튼: 보라색 테마 적용 */
+/* 주요 버튼: 선명한 보라색 버블 그라데이션 */
 button.primary-btn {
     background: linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%);
     color: white;
@@ -254,7 +267,7 @@ button.primary-btn {
 }
 
 button.primary-btn:hover {
-    background: linear-gradient(135deg, #7c3aed 0%, #5b21b6 100%);
+    background: linear-gradient(135deg, #9333ea 0%, #5b21b6 100%);
 }
 
 button:active {
@@ -262,33 +275,33 @@ button:active {
 }
 
 button.recording {
-    background-color: #e74c3c;
+    background-color: #ef4444;
     animation: pulse 1.5s infinite;
 }
 
 button.recording:hover {
-    background-color: #c0392b;
+    background-color: #dc2626;
 }
 
 @keyframes pulse {
     0% {
-        box-shadow: 0 0 0 0 rgba(231, 76, 60, 0.7);
+        box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7);
     }
     70% {
-        box-shadow: 0 0 0 10px rgba(231, 76, 60, 0);
+        box-shadow: 0 0 0 10px rgba(239, 68, 68, 0);
     }
     100% {
-        box-shadow: 0 0 0 0 rgba(231, 76, 60, 0);
+        box-shadow: 0 0 0 0 rgba(239, 68, 68, 0);
     }
 }
 
 .ai-box {
-    background-color: #f5f3ff;
-    border: 1px solid #ddd6fe;
+    background-color: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(196, 181, 253, 0.3);
     border-radius: 8px;
     padding: 20px;
     min-height: 100px;
-    color: #4c1d95;
+    color: #f3e8ff;
     font-size: 1rem;
     line-height: 1.6;
     margin-top: 10px;
@@ -296,13 +309,13 @@ button.recording:hover {
 
 /* 히스토리 섹션 스타일 */
 #history-section {
-    border-top: 1px solid #eee;
+    border-top: 1px solid rgba(255, 255, 255, 0.15);
     padding-top: 20px;
 }
 
 #history-section h2 {
     font-size: 1.2rem;
-    color: #6d28d9;
+    color: #f3e8ff;
     margin-bottom: 15px;
     text-align: left;
 }
@@ -314,52 +327,114 @@ button.recording:hover {
 }
 
 .history-card {
-    background: #f8f5ff;
+    background: rgba(255, 255, 255, 0.08);
     border-radius: 8px;
     padding: 15px;
-    border: 1px solid #ede9fe;
+    border: 1px solid rgba(196, 181, 253, 0.25);
     text-align: left;
 }
 
 .history-date {
     font-size: 0.85em;
-    color: #7c3aed;
+    color: #c4b5fd;
     margin-bottom: 8px;
 }
 
 .history-original {
     font-style: italic;
-    color: #555;
+    color: #e2e8f0;
     margin-bottom: 10px;
     padding-left: 10px;
-    border-left: 3px solid #c4b5fd;
+    border-left: 3px solid #a78bfa;
     font-size: 0.95em;
 }
 
 .history-ai {
-    color: #2e1065;
+    color: #ffffff;
     line-height: 1.5;
     font-size: 0.95em;
 }
 
 /* 실시간 채팅 섹션 스타일 */
 #chat-section {
-    border-top: 1px solid #eee;
+    border-top: 1px solid rgba(255, 255, 255, 0.15);
     padding-top: 20px;
 }
 
 #chat-section h2 {
     font-size: 1.2rem;
-    color: #6d28d9;
+    color: #f3e8ff;
     margin-bottom: 15px;
     text-align: left;
+}
+
+/* 프로필 섹션 스타일 */
+.profile-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 0 16px 0;
+    border-bottom: 1px dashed rgba(196, 181, 253, 0.3);
+    margin-bottom: 12px;
+}
+
+.profile-avatar-container {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background-color: #3b1566;
+    border: 3px solid #a78bfa;
+    box-shadow: 0 4px 12px rgba(167, 139, 250, 0.3);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+    cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.profile-avatar-container:hover {
+    transform: scale(1.05);
+    box-shadow: 0 6px 16px rgba(167, 139, 250, 0.45);
+}
+
+.profile-avatar-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 50%;
+}
+
+.default-avatar-icon {
+    width: 48px;
+    height: 48px;
+    color: #c4b5fd;
+}
+
+.profile-change-btn {
+    flex: none;
+    background: none;
+    border: none;
+    color: #ddd6fe;
+    font-size: 0.88rem;
+    font-weight: 600;
+    cursor: pointer;
+    padding: 4px 10px;
+    border-radius: 6px;
+    transition: background-color 0.2s, color 0.2s;
+}
+
+.profile-change-btn:hover {
+    background-color: rgba(255, 255, 255, 0.15);
+    color: #ffffff;
 }
 
 .chat-messages-container {
     height: 280px;
     overflow-y: auto;
-    background-color: #fcfaff;
-    border: 1px solid #ede9fe;
+    background-color: rgba(15, 7, 32, 0.5);
+    border: 1px solid rgba(196, 181, 253, 0.3);
     border-radius: 12px;
     padding: 16px;
     display: flex;
@@ -373,12 +448,12 @@ button.recording:hover {
 }
 
 .chat-messages-container::-webkit-scrollbar-thumb {
-    background-color: #c4b5fd;
+    background-color: #8b5cf6;
     border-radius: 10px;
 }
 
 .chat-placeholder {
-    color: #94a3b8;
+    color: #cbd5e1;
     text-align: center;
     margin: auto 0;
     font-size: 0.9rem;
@@ -402,11 +477,34 @@ button.recording:hover {
 }
 
 .chat-sender-tag {
-    font-size: 0.76rem;
-    color: #7c3aed;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.78rem;
+    color: #c4b5fd;
     font-weight: 600;
-    margin-bottom: 3px;
+    margin-bottom: 4px;
     padding-left: 2px;
+}
+
+.chat-item.mine .chat-sender-tag {
+    flex-direction: row-reverse;
+    padding-right: 2px;
+}
+
+.chat-sender-avatar-img {
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 1.5px solid #a78bfa;
+    background-color: #3b1566;
+    flex-shrink: 0;
+}
+
+.chat-sender-avatar-fallback {
+    font-size: 0.82rem;
+    line-height: 1;
 }
 
 .chat-bubble {
@@ -419,7 +517,7 @@ button.recording:hover {
     background: linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%);
     color: #ffffff;
     border-radius: 16px 16px 2px 16px;
-    box-shadow: 0 2px 8px rgba(124, 58, 237, 0.2);
+    box-shadow: 0 2px 8px rgba(139, 92, 246, 0.3);
 }
 
 .chat-item.others .chat-bubble {
@@ -432,37 +530,115 @@ button.recording:hover {
 
 .chat-timestamp {
     font-size: 0.68rem;
-    color: #a1a1aa;
+    color: #cbd5e1;
     margin-top: 3px;
     padding: 0 2px;
 }
 
 .chat-input-form {
     display: flex;
-    gap: 10px;
+    gap: 8px;
     width: 100%;
     margin-top: 10px;
+    align-items: center;
 }
 
-.chat-input-form input {
+.chat-input-form input[type="text"] {
     flex: 1;
     padding: 12px 14px;
-    border: 1px solid #cbd5e1;
+    border: 1px solid #c4b5fd;
     border-radius: 8px;
     font-size: 0.95rem;
     outline: none;
+    background-color: #ffffff;
+    color: #1e1b4b;
     transition: all 0.2s ease;
 }
 
-.chat-input-form input:focus {
-    border-color: #8b5cf6;
-    box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.2);
+.chat-input-form input[type="text"]:focus {
+    border-color: #a78bfa;
+    box-shadow: 0 0 0 3px rgba(167, 139, 250, 0.4);
 }
 
-.chat-input-form button {
+.chat-icon-btn {
     flex: none;
-    width: 90px;
-    padding: 12px;
-    font-size: 0.95rem;
+    width: 44px;
+    height: 44px;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
 }
 
+#chatAttachBtn {
+    background-color: rgba(255, 255, 255, 0.15);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    color: #c4b5fd;
+}
+
+#chatAttachBtn:hover {
+    background-color: rgba(255, 255, 255, 0.25);
+    color: #ffffff;
+    border-color: rgba(255, 255, 255, 0.5);
+}
+
+#sendChatBtn.chat-icon-btn {
+    width: 44px;
+    height: 44px;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%);
+    color: #ffffff;
+    border: none;
+}
+
+#sendChatBtn.chat-icon-btn:hover {
+    background: linear-gradient(135deg, #9333ea 0%, #5b21b6 100%);
+}
+
+.chat-icon {
+    width: 20px;
+    height: 20px;
+}
+
+/* 채팅 첨부 이미지 및 로딩 실패 스타일 */
+.chat-bubble-image {
+    padding: 4px !important;
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+}
+
+.chat-attached-image {
+    max-width: 220px;
+    max-height: 220px;
+    border-radius: 12px;
+    object-fit: cover;
+    display: block;
+    cursor: pointer;
+    border: 2px solid rgba(196, 181, 253, 0.4);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    transition: transform 0.2s ease, border-color 0.2s ease;
+}
+
+.chat-attached-image:hover {
+    transform: scale(1.02);
+    border-color: #a78bfa;
+}
+
+.chat-image-error {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background-color: rgba(239, 68, 68, 0.15);
+    border: 1px solid rgba(239, 68, 68, 0.4);
+    color: #fca5a5;
+    padding: 10px 14px;
+    border-radius: 10px;
+    font-size: 0.85rem;
+}
