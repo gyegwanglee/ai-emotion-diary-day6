@@ -6,7 +6,9 @@
 
 body {
     font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, Roboto, 'Helvetica Neue', 'Segoe UI', 'Apple SD Gothic Neo', 'Noto Sans KR', 'Malgun Gothic', sans-serif;
-    background-color: #f5f7fa;
+    /* 바탕화면: 짙은 보라색 그라데이션 */
+    background: linear-gradient(135deg, #180928 0%, #290f45 50%, #130522 100%);
+    background-attachment: fixed;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -14,11 +16,19 @@ body {
     padding: 40px 20px;
 }
 
+.app-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    align-items: center;
+    width: 100%;
+}
+
 .container {
-    background-color: white;
+    background-color: #ffffff;
     padding: 30px;
-    border-radius: 12px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    border-radius: 18px;
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.25);
     width: 90%;
     max-width: 600px;
     display: flex;
@@ -26,15 +36,179 @@ body {
     gap: 20px;
 }
 
+/* 로그인 화면 전용 스타일 */
+.auth-container {
+    max-width: 440px;
+    padding: 38px 32px;
+    animation: fadeIn 0.4s ease-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* 타이틀: 선명하고 우아한 보라색 */
+.auth-title {
+    text-align: center;
+    color: #7c3aed;
+    font-size: 1.9rem;
+    font-weight: 800;
+}
+
+.auth-subtitle {
+    text-align: center;
+    color: #64748b;
+    font-size: 0.95rem;
+    margin-top: -10px;
+    margin-bottom: 10px;
+}
+
+.input-field-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-bottom: 14px;
+}
+
+.input-field-group label {
+    font-size: 0.88rem;
+    font-weight: 600;
+    color: #475569;
+}
+
+.input-field-group input {
+    width: 100%;
+    padding: 12px 14px;
+    border: 1px solid #cbd5e1;
+    border-radius: 8px;
+    font-size: 0.98rem;
+    outline: none;
+    transition: all 0.2s ease;
+}
+
+.input-field-group input:focus {
+    border-color: #8b5cf6;
+    box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.2);
+}
+
+.auth-buttons {
+    margin-top: 10px;
+}
+
+.auth-message {
+    font-size: 0.9rem;
+    text-align: center;
+    min-height: 20px;
+    margin-top: -4px;
+    margin-bottom: 4px;
+    word-break: keep-all;
+}
+
+.auth-message.error {
+    color: #ef4444;
+}
+
+.auth-message.success {
+    color: #10b981;
+}
+
+/* 버튼 공통 & 2차 버튼 */
+button.secondary-btn {
+    background-color: #f1f5f9;
+    color: #334155;
+    border: 1px solid #cbd5e1;
+}
+
+button.secondary-btn:hover {
+    background-color: #e2e8f0;
+}
+
+/* 또는 구분선 */
+.divider {
+    display: flex;
+    align-items: center;
+    text-align: center;
+    margin: 5px 0;
+    color: #94a3b8;
+    font-size: 0.85rem;
+}
+
+.divider::before, .divider::after {
+    content: '';
+    flex: 1;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.divider span {
+    padding: 0 12px;
+}
+
+/* Google 로그인 버튼 */
+.google-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    background-color: #ffffff;
+    color: #1e293b;
+    border: 1px solid #e2e8f0;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+}
+
+.google-btn:hover {
+    background-color: #f8fafc;
+    border-color: #cbd5e1;
+}
+
+.google-icon {
+    width: 20px;
+    height: 20px;
+}
+
+/* 로그인 사용자 헤더 */
+.user-header {
+    width: 90%;
+    max-width: 600px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: white;
+    padding: 12px 20px;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+}
+
+#userEmailInfo {
+    font-size: 0.92rem;
+    color: #334155;
+}
+
+.logout-btn {
+    flex: none;
+    padding: 8px 16px;
+    font-size: 0.85rem;
+    background-color: #fff1f2;
+    color: #e11d48;
+    border: 1px solid #fecdd3;
+    border-radius: 6px;
+}
+
+.logout-btn:hover {
+    background-color: #ffe4e6;
+}
+
+/* 메인 타이틀: 보라색 지정 */
 h1 {
     text-align: center;
-    color: #333;
-    font-size: 1.5rem;
+    color: #7c3aed;
+    font-size: 1.6rem;
+    font-weight: 700;
 }
 
 textarea {
     width: 100%;
-    height: 200px;
+    height: 180px;
     padding: 15px;
     border: 1px solid #ddd;
     border-radius: 8px;
@@ -45,7 +219,8 @@ textarea {
 }
 
 textarea:focus {
-    border-color: #4a90e2;
+    border-color: #8b5cf6;
+    box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.2);
 }
 
 .button-group {
@@ -60,25 +235,26 @@ button {
     color: #333;
     border: 1px solid #ddd;
     border-radius: 8px;
-    padding: 15px;
-    font-size: 1.1rem;
-    font-weight: bold;
+    padding: 14px;
+    font-size: 1rem;
+    font-weight: 600;
     cursor: pointer;
-    transition: all 0.3s;
+    transition: all 0.2s;
 }
 
 button:hover {
     background-color: #e4e4e4;
 }
 
+/* 주요 버튼: 보라색 테마 적용 */
 button.primary-btn {
-    background-color: #4a90e2;
+    background: linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%);
     color: white;
     border: none;
 }
 
 button.primary-btn:hover {
-    background-color: #357abd;
+    background: linear-gradient(135deg, #7c3aed 0%, #5b21b6 100%);
 }
 
 button:active {
@@ -107,12 +283,12 @@ button.recording:hover {
 }
 
 .ai-box {
-    background-color: #f1f3f5;
-    border: 1px solid #e9ecef;
+    background-color: #f5f3ff;
+    border: 1px solid #ddd6fe;
     border-radius: 8px;
     padding: 20px;
     min-height: 100px;
-    color: #555;
+    color: #4c1d95;
     font-size: 1rem;
     line-height: 1.6;
     margin-top: 10px;
@@ -126,7 +302,7 @@ button.recording:hover {
 
 #history-section h2 {
     font-size: 1.2rem;
-    color: #444;
+    color: #6d28d9;
     margin-bottom: 15px;
     text-align: left;
 }
@@ -138,16 +314,16 @@ button.recording:hover {
 }
 
 .history-card {
-    background: #f8f9fa;
+    background: #f8f5ff;
     border-radius: 8px;
     padding: 15px;
-    border: 1px solid #e9ecef;
+    border: 1px solid #ede9fe;
     text-align: left;
 }
 
 .history-date {
     font-size: 0.85em;
-    color: #888;
+    color: #7c3aed;
     margin-bottom: 8px;
 }
 
@@ -156,12 +332,12 @@ button.recording:hover {
     color: #555;
     margin-bottom: 10px;
     padding-left: 10px;
-    border-left: 3px solid #ddd;
+    border-left: 3px solid #c4b5fd;
     font-size: 0.95em;
 }
 
 .history-ai {
-    color: #222;
+    color: #2e1065;
     line-height: 1.5;
     font-size: 0.95em;
 }

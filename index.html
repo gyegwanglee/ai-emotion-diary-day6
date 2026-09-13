@@ -6,28 +6,77 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AI 감정일기</title>
     <link rel="stylesheet" href="style.css">
+    <!-- Supabase JS Client Library -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 
 <body>
-    <div class="container">
-        <h1>오늘의 하루는 어땠나요?</h1>
-        <textarea id="textInput" placeholder="여기에 텍스트가 입력됩니다..."></textarea>
+    <!-- 1. 로그인/회원가입 섹션 (비로그인 시 표시) -->
+    <div id="auth-section" class="container auth-container">
+        <h1 class="auth-title">AI 감정일기</h1>
+        <p class="auth-subtitle">오늘의 하루를 기록하고 따뜻한 위로를 받아보세요.</p>
 
-        <div class="button-group">
-            <button id="voiceBtn">음성으로 입력하기</button>
-            <button id="analyzeBtn" class="primary-btn">분석 요청하기</button>
+        <form id="authForm" onsubmit="return false;">
+            <div class="input-field-group">
+                <label for="emailInput">이메일</label>
+                <input type="email" id="emailInput" placeholder="example@email.com" required autocomplete="email">
+            </div>
+            
+            <div class="input-field-group">
+                <label for="passwordInput">비밀번호</label>
+                <input type="password" id="passwordInput" placeholder="비밀번호를 입력하세요" required autocomplete="current-password">
+            </div>
+
+            <div id="authMessage" class="auth-message"></div>
+
+            <div class="button-group auth-buttons">
+                <button type="button" id="loginBtn" class="primary-btn">로그인</button>
+                <button type="button" id="signupBtn" class="secondary-btn">회원가입</button>
+            </div>
+        </form>
+
+        <div class="divider">
+            <span>또는</span>
         </div>
 
-        <div id="aiResponse" class="ai-box">
-            여기에 AI의 답변이 표시됩니다.
-        </div>
+        <button type="button" id="googleLoginBtn" class="google-btn">
+            <svg class="google-icon" viewBox="0 0 24 24">
+                <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+                <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+                <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/>
+                <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/>
+            </svg>
+            Google로 로그인
+        </button>
     </div>
 
-    <!-- 나의 일기 히스토리 섹션 추가 -->
-    <div class="container" id="history-section" style="margin-top: 30px;">
-        <h2>나의 일기 히스토리</h2>
-        <div id="history-container">
-            <!-- 히스토리 카드들이 여기에 동적으로 추가됩니다 -->
+    <!-- 2. 메인 일기장 섹션 (로그인 성공 시 표시) -->
+    <div id="main-app-section" class="app-wrapper" style="display: none; width: 100%; max-width: 600px;">
+        <div class="user-header">
+            <span id="userEmailInfo">👤 <strong id="userEmail">user@example.com</strong>님 환영합니다</span>
+            <button id="logoutBtn" class="logout-btn">로그아웃</button>
+        </div>
+
+        <div class="container">
+            <h1>오늘의 하루는 어땠나요?</h1>
+            <textarea id="textInput" placeholder="여기에 텍스트가 입력됩니다..."></textarea>
+
+            <div class="button-group">
+                <button id="voiceBtn">음성으로 입력하기</button>
+                <button id="analyzeBtn" class="primary-btn">분석 요청하기</button>
+            </div>
+
+            <div id="aiResponse" class="ai-box">
+                여기에 AI의 답변이 표시됩니다.
+            </div>
+        </div>
+
+        <!-- 나의 일기 히스토리 섹션 -->
+        <div class="container" id="history-section" style="margin-top: 30px;">
+            <h2>나의 일기 히스토리</h2>
+            <div id="history-container">
+                <!-- 히스토리 카드들이 여기에 동적으로 추가됩니다 -->
+            </div>
         </div>
     </div>
 
@@ -35,4 +84,3 @@
 </body>
 
 </html>
-node server.js
